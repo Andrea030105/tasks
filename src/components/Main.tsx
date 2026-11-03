@@ -8,7 +8,7 @@ import TaskForm from "./TaskForm";
 import { useTasks } from "../hooks/useTasks";
 import type { Priority, Task } from "../api/tasks";
 import TaskFilter, { type FilterDone, type FilterPriority } from "./TaskFilter";
-import { LoaderCircle } from "lucide-react";
+import { CircleCheckBig, LoaderCircle } from "lucide-react";
 
 // Funzione che prende in input i task e li filtra per la select Done
 function applyFilterDone(tasks: Task[], filter: FilterDone): Task[] {
@@ -91,6 +91,13 @@ export default function Main() {
     setFilterPriority("all");
   };
 
+  const counterTasksDone = filteredTask.filter((t) => t.done).length;
+  const counterAllTask = filteredTask.length;
+  const percent =
+    counterAllTask === 0
+      ? 0
+      : Math.round((counterTasksDone / counterAllTask) * 100);
+
   return (
     <>
       {loading && (
@@ -121,7 +128,25 @@ export default function Main() {
               onChangeFilterPriority={setFilterPriority}
               onReset={resetFilter}
             />
-
+            {/* Contatore tasks completate */}
+            <label className="font-bold flex items-center gap-1">
+              <CircleCheckBig className="size-5" />
+              Completate
+            </label>
+            <div className="mb-4 border-2 border-amber-400 rounded-2xl p-3">
+              <div className="mb-1 flex justify-between text-sm text-gray-600">
+                <span>
+                  {counterTasksDone} di {counterAllTask} completate
+                </span>
+                <span>{percent}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-gray-200">
+                <div
+                  className="h-2 rounded-full bg-amber-500 transition-all"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+            </div>
             <div className="border-2 border-amber-400 rounded-2xl  w-full py-5 px-3">
               {
                 //Errore di caricamento: sostituisce la lista
