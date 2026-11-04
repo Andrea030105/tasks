@@ -11,7 +11,7 @@ interface TaskItemProps {
   task: Task;
   onToggleDone: (task: Task) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: number) => void;
+  onDelete: (task: Task) => void;
 }
 
 export default function TaskItem({
@@ -82,7 +82,7 @@ export default function TaskItem({
         {/* Pulsante per eliminare la task */}
         <button
           className="p-1 border-2 border-red-900 bg-red-500 hover:bg-red-800 cursor-pointer"
-          onClick={() => onDelete(task.id)}
+          onClick={() => onDelete(task)}
         >
           <Trash />
         </button>

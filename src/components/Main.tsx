@@ -13,6 +13,7 @@ import TaskFilter, {
   type FilterPriority,
 } from "./TaskFilter";
 import { CircleCheckBig, LoaderCircle } from "lucide-react";
+import DeleteModal from "./DeleteModal";
 
 // Funzione che prende in input i task e li filtra per la select Done
 function applyFilterDone(tasks: Task[], filter: FilterDone): Task[] {
@@ -81,6 +82,9 @@ export default function Main() {
   // Task che si sta modificando: se è null la modale è chiusa
   const [taskModify, setTaskModify] = useState<Task | null>(null);
 
+  // Task che si sta eliminando: se è null la modale è chiusa
+  const [taskDelete, setTaskDelete] = useState<Task | null>(null);
+
   // State che contiene il valore del filtro Done della select
   const [filterDone, setFilterDone] = useState<FilterDone>("all");
 
@@ -123,6 +127,12 @@ export default function Main() {
   ) => {
     const closeModal = await handlerPatchTask(id, changes);
     if (closeModal) setTaskModify(null);
+  };
+
+  // Canecella la task e chiude la modale
+  const handleDelete = async (id: number) => {
+    const closeModal = await handlerDeleteTask(id);
+    if (closeModal) setTaskDelete(null);
   };
 
   /*  Filtra per ogni stato 
@@ -172,6 +182,15 @@ export default function Main() {
               onSave={handleSave}
               // Task da modificare
               task={taskModify}
+            />
+          )}
+
+          {/* Mostra la modale per la cancellazione di un task */}
+          {taskDelete && (
+            <DeleteModal
+              onClose={() => setTaskDelete(null)}
+              onDelete={handleDelete}
+              task={taskDelete}
             />
           )}
           <main className="bg-amber-200 min-h-[calc(100vh-80px)] px-10 py-5">
@@ -229,7 +248,7 @@ export default function Main() {
                       task={t}
                       onToggleDone={handlerPatchTaskDone}
                       onEdit={setTaskModify}
-                      onDelete={handlerDeleteTask}
+                      onDelete={setTaskDelete}
                     />
                   ))
                 ) : (

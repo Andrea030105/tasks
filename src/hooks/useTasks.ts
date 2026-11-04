@@ -141,6 +141,7 @@ export function useTasks() {
     try {
       // Elimina la task sul backend
       await deleteTask(id);
+      return true;
     } catch (error) {
       // Salviamo l'errore dell'azione
       setActionError(
@@ -148,6 +149,7 @@ export function useTasks() {
       );
       // Se la richiesta fallisce, rimette l'elenco com'era
       setTasks(previous);
+      return false;
     }
   };
 
