@@ -1,4 +1,4 @@
-import { Funnel, RotateCcw, Search } from "lucide-react";
+import { CalendarClock, Funnel, RotateCcw, Search } from "lucide-react";
 
 export type FilterDone = "all" | "done" | "notDone";
 
@@ -11,6 +11,8 @@ interface TaskFilterProps {
   onChangeFilterDone: (filter: FilterDone) => void;
   filterPriority: FilterPriority;
   onChangeFilterPriority: (filter: FilterPriority) => void;
+  filterDueDate: string;
+  onChangeFilterDueDate: (filter: string) => void;
   onReset: () => void;
 }
 
@@ -24,10 +26,13 @@ export default function TaskFilter({
   onChangeFilterDone,
   filterPriority,
   onChangeFilterPriority,
+  filterDueDate,
+  onChangeFilterDueDate,
   onReset,
 }: TaskFilterProps) {
   return (
     <div className="flex flex-wrap justify-between items-end gap-3 mb-3">
+      {/* FILTRO CERCA */}
       <div className="flex flex-col flex-1 min-w-48 max-w-sm">
         <label
           htmlFor="inputFilter"
@@ -47,6 +52,7 @@ export default function TaskFilter({
         />
       </div>
 
+      {/* FILTRO COMPLETATE */}
       <div className="flex flex-col">
         <label
           htmlFor="filterDone"
@@ -67,6 +73,8 @@ export default function TaskFilter({
           <option value="notDone">Non completate</option>
         </select>
       </div>
+
+      {/* FILTRO PRIORITÀ */}
       <div className="flex flex-col">
         <label
           htmlFor="filterPriority"
@@ -90,6 +98,26 @@ export default function TaskFilter({
           <option value="high">High</option>
         </select>
       </div>
+
+      {/* FILTRO SCADENZA */}
+      <div className="flex flex-col">
+        <label
+          htmlFor="filterDueDate"
+          className="font-bold flex items-center gap-1"
+        >
+          <CalendarClock className="size-5" />
+          Scadenza
+        </label>
+        <input
+          type="date"
+          className={fieldClass}
+          name="filterDueDate"
+          id="filterDueDate"
+          value={filterDueDate}
+          onChange={(e) => onChangeFilterDueDate(e.target.value)}
+        />
+      </div>
+
       <button
         className="h-10 flex items-center gap-2 rounded-2xl border-2 border-amber-400 bg-amber-500 px-4 font-bold transition hover:bg-amber-600 cursor-pointer focus-visible:outline-2 focus-visible:outline-amber-800"
         onClick={onReset}

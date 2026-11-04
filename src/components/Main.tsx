@@ -38,6 +38,15 @@ function applyFilterPriority(tasks: Task[], filter: FilterPriority): Task[] {
   }
 }
 
+// Funzione che prende in input i task e li filtra per l'input DueDate
+function applyFilterDueDate(tasks: Task[], filter: string): Task[] {
+  if (filter !== "") {
+    const tasksFilteredDueDate = tasks.filter((t) => t.dueDate === filter);
+    return tasksFilteredDueDate;
+  }
+  return tasks;
+}
+
 export default function Main() {
   // Task che si sta modificando: se è null la modale è chiusa
   const [taskModify, setTaskModify] = useState<Task | null>(null);
@@ -50,6 +59,9 @@ export default function Main() {
 
   // State che contiene il valore del filtro dell'input
   const [inputFilter, setInputFilter] = useState("");
+
+  // State che contine il valore del filtro della scadenza
+  const [filterDueDate, setFilterDueDate] = useState("");
 
   const {
     handlerPostTask,
@@ -81,7 +93,8 @@ export default function Main() {
       così la ricerca ignora le maiuscole */
   const byDone = applyFilterDone(tasks, filterDone);
   const byPriority = applyFilterPriority(byDone, filterPriority);
-  const filteredTask = byPriority.filter((t) =>
+  const byDueDate = applyFilterDueDate(byPriority, filterDueDate);
+  const filteredTask = byDueDate.filter((t) =>
     t.title.toLowerCase().includes(inputFilter.toLowerCase().trim()),
   );
 
@@ -89,6 +102,7 @@ export default function Main() {
     setInputFilter("");
     setFilterDone("all");
     setFilterPriority("all");
+    setFilterDueDate("");
   };
 
   const counterTasksDone = filteredTask.filter((t) => t.done).length;
@@ -126,6 +140,8 @@ export default function Main() {
               onChangeFilterDone={setFilterDone}
               filterPriority={filterPriority}
               onChangeFilterPriority={setFilterPriority}
+              filterDueDate={filterDueDate}
+              onChangeFilterDueDate={setFilterDueDate}
               onReset={resetFilter}
             />
             {/* Contatore tasks completate */}
@@ -147,7 +163,7 @@ export default function Main() {
                 />
               </div>
             </div>
-            <div className="border-2 border-amber-400 rounded-2xl  w-full py-5 px-3">
+            <div className="border-2 border-amber-400 rounded-2xl  w-full py-5 px-3 max-h-125 overflow-auto">
               {
                 //Errore di caricamento: sostituisce la lista
                 error ? (
