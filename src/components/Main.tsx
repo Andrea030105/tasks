@@ -7,7 +7,11 @@ import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import { useTasks } from "../hooks/useTasks";
 import type { Priority, Task } from "../api/tasks";
-import TaskFilter, { type FilterDone, type FilterPriority } from "./TaskFilter";
+import TaskFilter, {
+  type FilterDone,
+  type FilterDueDateMode,
+  type FilterPriority,
+} from "./TaskFilter";
 import { CircleCheckBig, LoaderCircle } from "lucide-react";
 
 // Funzione che prende in input i task e li filtra per la select Done
@@ -39,12 +43,38 @@ function applyFilterPriority(tasks: Task[], filter: FilterPriority): Task[] {
 }
 
 // Funzione che prende in input i task e li filtra per l'input DueDate
-function applyFilterDueDate(tasks: Task[], filter: string): Task[] {
+function applyFilterDueDate(
+  tasks: Task[],
+  mode: FilterDueDateMode,
+  filter: string,
+): Task[] {
+  switch (mode) {
+    case "none":
+      return tasks.filter((t) => !t.dueDate);
+    case "custom":
+      if (filter === "") return tasks;
+      return tasks.filter((t) => t.dueDate === filter);
+    default:
+      return tasks;
+  }
+}
+
+// Funzione che prende in input i task e li filtra per l'input CreatedAt
+function applyFilterCreatedAt(tasks: Task[], filter: string): Task[] {
   if (filter !== "") {
-    const tasksFilteredDueDate = tasks.filter((t) => t.dueDate === filter);
-    return tasksFilteredDueDate;
+    const tasksFilteredCreatedAt = tasks.filter(
+      (t) => t.createdAt.slice(0, 10) === filter,
+    );
+    return tasksFilteredCreatedAt;
   }
   return tasks;
+}
+
+// Funzione che prende in input i task e li filtra per l'input Search
+function applyFilterInput(tasks: Task[], filter: string): Task[] {
+  return tasks.filter((t) =>
+    t.title.toLowerCase().includes(filter.toLowerCase().trim()),
+  );
 }
 
 export default function Main() {
@@ -58,10 +88,17 @@ export default function Main() {
   const [filterPriority, setFilterPriority] = useState<FilterPriority>("all");
 
   // State che contiene il valore del filtro dell'input
-  const [inputFilter, setInputFilter] = useState("");
+  const [filterInput, setFilterInput] = useState("");
 
   // State che contine il valore del filtro della scadenza
   const [filterDueDate, setFilterDueDate] = useState("");
+
+  // State che contine il valore della select  della scadenza
+  const [filterDueDateMode, setFilterDueDateMode] =
+    useState<FilterDueDateMode>("all");
+
+  // State che contine il valore del filtro della data di creazione
+  const [filterCreatedAt, setFilterCreatedAt] = useState("");
 
   const {
     handlerPostTask,
@@ -88,21 +125,26 @@ export default function Main() {
     if (closeModal) setTaskModify(null);
   };
 
-  /*  Filtra per stato (select [done | priority] )) e per testo (input).
+  /*  Filtra per ogni stato 
       Il testo cercato è normalizzato: senza spazi ai bordi e in minuscolo,
       così la ricerca ignora le maiuscole */
   const byDone = applyFilterDone(tasks, filterDone);
   const byPriority = applyFilterPriority(byDone, filterPriority);
-  const byDueDate = applyFilterDueDate(byPriority, filterDueDate);
-  const filteredTask = byDueDate.filter((t) =>
-    t.title.toLowerCase().includes(inputFilter.toLowerCase().trim()),
+  const byDueDate = applyFilterDueDate(
+    byPriority,
+    filterDueDateMode,
+    filterDueDate,
   );
+  const byCreatedAt = applyFilterCreatedAt(byDueDate, filterCreatedAt);
+  const filteredTask = applyFilterInput(byCreatedAt, filterInput);
 
   const resetFilter = () => {
-    setInputFilter("");
+    setFilterInput("");
     setFilterDone("all");
     setFilterPriority("all");
     setFilterDueDate("");
+    setFilterCreatedAt("");
+    setFilterDueDateMode("all");
   };
 
   const counterTasksDone = filteredTask.filter((t) => t.done).length;
@@ -132,16 +174,20 @@ export default function Main() {
               task={taskModify}
             />
           )}
-          <main className="bg-amber-200 min-h-[calc(100vh-80px)] p-10">
+          <main className="bg-amber-200 min-h-[calc(100vh-80px)] px-10 py-5">
             <TaskFilter
-              inputFilter={inputFilter}
-              onChangeInput={setInputFilter}
+              filterInput={filterInput}
+              onChangeFilterInput={setFilterInput}
               filterDone={filterDone}
               onChangeFilterDone={setFilterDone}
               filterPriority={filterPriority}
               onChangeFilterPriority={setFilterPriority}
+              filterDueDateMode={filterDueDateMode}
+              onChangeFilterDueDateMode={setFilterDueDateMode}
               filterDueDate={filterDueDate}
               onChangeFilterDueDate={setFilterDueDate}
+              filterCreatedAt={filterCreatedAt}
+              onChangeFilterCreatedAt={setFilterCreatedAt}
               onReset={resetFilter}
             />
             {/* Contatore tasks completate */}

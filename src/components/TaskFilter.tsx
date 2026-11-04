@@ -1,18 +1,30 @@
-import { CalendarClock, Funnel, RotateCcw, Search } from "lucide-react";
+import {
+  CalendarClock,
+  CalendarPlus,
+  Funnel,
+  RotateCcw,
+  Search,
+} from "lucide-react";
 
 export type FilterDone = "all" | "done" | "notDone";
 
 export type FilterPriority = "all" | "low" | "medium" | "high";
 
+export type FilterDueDateMode = "all" | "none" | "custom";
+
 interface TaskFilterProps {
-  inputFilter: string;
-  onChangeInput: (inputFilter: string) => void;
+  filterInput: string;
+  onChangeFilterInput: (inputFilter: string) => void;
   filterDone: FilterDone;
   onChangeFilterDone: (filter: FilterDone) => void;
   filterPriority: FilterPriority;
   onChangeFilterPriority: (filter: FilterPriority) => void;
+  filterDueDateMode: FilterDueDateMode;
+  onChangeFilterDueDateMode: (filter: FilterDueDateMode) => void;
   filterDueDate: string;
   onChangeFilterDueDate: (filter: string) => void;
+  filterCreatedAt: string;
+  onChangeFilterCreatedAt: (filter: string) => void;
   onReset: () => void;
 }
 
@@ -20,14 +32,18 @@ const fieldClass =
   "h-10 border-2 border-amber-400 rounded-2xl px-3 bg-transparent focus-visible:outline-2 focus-visible:outline-amber-800";
 
 export default function TaskFilter({
-  inputFilter,
-  onChangeInput,
+  filterInput,
+  onChangeFilterInput,
   filterDone,
   onChangeFilterDone,
   filterPriority,
   onChangeFilterPriority,
+  filterDueDateMode,
+  onChangeFilterDueDateMode,
   filterDueDate,
   onChangeFilterDueDate,
+  filterCreatedAt,
+  onChangeFilterCreatedAt,
   onReset,
 }: TaskFilterProps) {
   return (
@@ -47,8 +63,8 @@ export default function TaskFilter({
           type="text"
           name="inputFilter"
           id="inputFilter"
-          value={inputFilter}
-          onChange={(e) => onChangeInput(e.target.value)}
+          value={filterInput}
+          onChange={(e) => onChangeFilterInput(e.target.value)}
         />
       </div>
 
@@ -99,23 +115,60 @@ export default function TaskFilter({
         </select>
       </div>
 
-      {/* FILTRO SCADENZA */}
+      {/* FILTRO DATA DI CREAZIONE */}
       <div className="flex flex-col">
         <label
-          htmlFor="filterDueDate"
+          htmlFor="filterCreatedAt"
+          className="font-bold flex items-center gap-1"
+        >
+          <CalendarPlus className="size-5" />
+          Creazione
+        </label>
+        <input
+          type="date"
+          className={fieldClass}
+          name="filterCreatedAt"
+          id="filterCreatedAt"
+          value={filterCreatedAt}
+          onChange={(e) => onChangeFilterCreatedAt(e.target.value)}
+        />
+      </div>
+
+      {/* FILTRO SCADENZA */}
+      <div className="flex flex-col w-72">
+        <label
+          htmlFor="filterDueDateMode"
           className="font-bold flex items-center gap-1"
         >
           <CalendarClock className="size-5" />
           Scadenza
         </label>
-        <input
-          type="date"
-          className={fieldClass}
-          name="filterDueDate"
-          id="filterDueDate"
-          value={filterDueDate}
-          onChange={(e) => onChangeFilterDueDate(e.target.value)}
-        />
+        <div className="flex gap-2">
+          <select
+            className={fieldClass}
+            name="filterDueDateMode"
+            id="filterDueDateMode"
+            value={filterDueDateMode}
+            onChange={(e) =>
+              onChangeFilterDueDateMode(e.target.value as FilterDueDateMode)
+            }
+          >
+            <option value="all">Tutte</option>
+            <option value="none">Nessuna Scadenza</option>
+            <option value="custom">Scadenza</option>
+          </select>
+
+          {filterDueDateMode === "custom" && (
+            <input
+              type="date"
+              className={fieldClass}
+              name="filterDueDate"
+              id="filterDueDate"
+              value={filterDueDate}
+              onChange={(e) => onChangeFilterDueDate(e.target.value)}
+            />
+          )}
+        </div>
       </div>
 
       <button

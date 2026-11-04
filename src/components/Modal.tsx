@@ -31,6 +31,8 @@ export default function Modal({ task, onClose, onSave }: ModalProps) {
   const [dueDate, setDueDate] = useState(task.dueDate ?? "");
   // Stato locale di done, inizializzato con quello della task
   const [done, setDone] = useState(task.done);
+  // Stato per errori
+  const [error, setError] = useState("");
 
   // Gestisce l'invio del form
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
@@ -40,6 +42,12 @@ export default function Modal({ task, onClose, onSave }: ModalProps) {
     const trimmed = title.trim();
     // Se il titolo è vuoto non salva
     if (!trimmed) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    if (dueDate !== "" && dueDate < today)
+      return setError(
+        "La data deve essere oggi oppure un periodo di scadenza futuro!!",
+      );
 
     const dueDateValue = dueDate ? dueDate : null;
 
@@ -94,6 +102,10 @@ export default function Modal({ task, onClose, onSave }: ModalProps) {
             onChange={(e) => setDueDate(e.target.value)}
             className="border-2 border-amber-400 rounded-2xl  my-1 py-1 px-2 focus-visible:outline-0"
           />
+          {error && (
+            <p className="font-bold text-red-600 text-sm my-1">{error}</p>
+          )}
+
           {/* Checkbox per lo stato completato */}
           <label className="flex items-center gap-2 font-bold">
             Done
