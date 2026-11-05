@@ -14,6 +14,7 @@ import TaskFilter, {
 } from "./TaskFilter";
 import { CircleCheckBig, LoaderCircle } from "lucide-react";
 import DeleteModal from "./DeleteModal";
+import DeleteAllModal from "./DeleteAllModal";
 
 // Funzione che prende in input i task e li filtra per la select Done
 function applyFilterDone(tasks: Task[], filter: FilterDone): Task[] {
@@ -85,6 +86,9 @@ export default function Main() {
   // Task che si sta eliminando: se è null la modale è chiusa
   const [taskDelete, setTaskDelete] = useState<Task | null>(null);
 
+  // State per modale all tasks delete
+  const [deleteAllTasks, setDeleteAllTasks] = useState(false);
+
   // State che contiene il valore del filtro Done della select
   const [filterDone, setFilterDone] = useState<FilterDone>("all");
 
@@ -108,6 +112,7 @@ export default function Main() {
     handlerPostTask,
     handlerPatchTaskDone,
     handlerPatchTask,
+    handlerDeleteAllTask,
     handlerDeleteTask,
     tasks,
     loading,
@@ -127,6 +132,12 @@ export default function Main() {
   ) => {
     const closeModal = await handlerPatchTask(id, changes);
     if (closeModal) setTaskModify(null);
+  };
+
+  // Cancella tutte le tasks
+  const handleDeleteAll = async () => {
+    const success = await handlerDeleteAllTask();
+    if (success) setDeleteAllTasks(false);
   };
 
   // Canecella la task e chiude la modale
@@ -167,7 +178,7 @@ export default function Main() {
   return (
     <>
       {loading && (
-        <div className="bg-amber-200 min-h-[calc(100vh-80px)] p-10 flex justify-center items-center">
+        <div className="bg-amber-200 min-h-[calc(100vh-60px)] p-10 flex justify-center items-center">
           <LoaderCircle className="animate-spin text-amber-400" size={64} />
         </div>
       )}
@@ -193,7 +204,14 @@ export default function Main() {
               task={taskDelete}
             />
           )}
-          <main className="bg-amber-200 min-h-[calc(100vh-80px)] px-10 py-5">
+          {/* Mostra la modale per la cancellazione di tutte le tasks */}
+          {deleteAllTasks && (
+            <DeleteAllModal
+              onClose={() => setDeleteAllTasks(false)}
+              onDelete={handleDeleteAll}
+            />
+          )}
+          <main className="bg-amber-200 min-h-[calc(100vh-60px)] px-10 py-5">
             <TaskFilter
               filterInput={filterInput}
               onChangeFilterInput={setFilterInput}
@@ -208,6 +226,7 @@ export default function Main() {
               filterCreatedAt={filterCreatedAt}
               onChangeFilterCreatedAt={setFilterCreatedAt}
               onReset={resetFilter}
+              onAskDeleteAll={() => setDeleteAllTasks(true)}
             />
             {/* Contatore tasks completate */}
             <label className="font-bold flex items-center gap-1">

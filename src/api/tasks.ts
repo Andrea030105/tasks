@@ -34,6 +34,10 @@ export const patchTask = async (
   return data;
 };
 
+export const deleteAllTask = async () => {
+  await api.delete("/tasks", { data: { confirm: true } });
+};
+
 export const deleteTask = async (id: number) => {
   await api.delete(`/tasks/${id}`);
 };

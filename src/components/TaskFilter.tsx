@@ -4,6 +4,7 @@ import {
   Funnel,
   RotateCcw,
   Search,
+  Trash2,
 } from "lucide-react";
 
 export type FilterDone = "all" | "done" | "notDone";
@@ -26,6 +27,7 @@ interface TaskFilterProps {
   filterCreatedAt: string;
   onChangeFilterCreatedAt: (filter: string) => void;
   onReset: () => void;
+  onAskDeleteAll: () => void;
 }
 
 const fieldClass =
@@ -45,9 +47,10 @@ export default function TaskFilter({
   filterCreatedAt,
   onChangeFilterCreatedAt,
   onReset,
+  onAskDeleteAll,
 }: TaskFilterProps) {
   return (
-    <div className="flex flex-wrap justify-between items-end gap-3 mb-3">
+    <div className="flex flex-wrap justify-between items-end  mb-3">
       {/* FILTRO CERCA */}
       <div className="flex flex-col flex-1 min-w-48 max-w-sm">
         <label
@@ -135,7 +138,7 @@ export default function TaskFilter({
       </div>
 
       {/* FILTRO SCADENZA */}
-      <div className="flex flex-col w-72">
+      <div className="flex flex-col w-80">
         <label
           htmlFor="filterDueDateMode"
           className="font-bold flex items-center gap-1"
@@ -172,10 +175,17 @@ export default function TaskFilter({
       </div>
 
       <button
-        className="h-10 flex items-center gap-2 rounded-2xl border-2 border-amber-400 bg-amber-500 px-4 font-bold transition hover:bg-amber-600 cursor-pointer focus-visible:outline-2 focus-visible:outline-amber-800"
+        className="h-10 flex items-center gap-2 rounded-2xl border-2 border-amber-400 bg-amber-500 px-4 font-bold transition hover:bg-amber-600 cursor-pointer"
         onClick={onReset}
       >
         Reset Filtri <RotateCcw className="size-5" />
+      </button>
+
+      <button
+        className="h-10 flex items-center gap-2 rounded-2xl border-2 border-red-700 bg-red-600 px-4 font-bold transition hover:bg-red-700 cursor-pointer "
+        onClick={onAskDeleteAll}
+      >
+        <Trash2 /> Elimina tutte le tasks
       </button>
     </div>
   );

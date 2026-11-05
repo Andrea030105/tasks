@@ -5,6 +5,7 @@ import {
   deleteTask,
   postTask,
   patchTask,
+  deleteAllTask,
   type Task,
   type Priority,
 } from "../api/tasks";
@@ -130,6 +131,30 @@ export function useTasks() {
     }
   };
 
+  // Elimina tutte le tasks
+  const handlerDeleteAllTask = async () => {
+    setError(null);
+
+    const previous = tasks;
+
+    setTasks([]);
+
+    try {
+      await deleteAllTask();
+      return true;
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Errorre nella cancellazione di tutte le tasks",
+      );
+
+      setTasks(previous);
+
+      return false;
+    }
+  };
+
   // Elimina una task
   const handlerDeleteTask = async (id: number) => {
     // Puliamo l'errore da eventuali precedenti
@@ -157,6 +182,7 @@ export function useTasks() {
     handlerPostTask,
     handlerPatchTaskDone,
     handlerPatchTask,
+    handlerDeleteAllTask,
     handlerDeleteTask,
     tasks,
     loading,
